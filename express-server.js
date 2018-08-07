@@ -24,11 +24,6 @@ function generateRandomString() {
   return characters.join("");
 }
 
-console.log(generateRandomString());
-console.log(generateRandomString());
-console.log(generateRandomString());
-console.log(generateRandomString());
-
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
@@ -59,8 +54,11 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  console.log(req.body);
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  console.log(urlDatabase);  // debug statement to see POST parameters
+  res.redirect("/urls/" + shortURL);         // Respond with 'Ok' (we will replace this)
 });
 
 app.listen(PORT, () => {
