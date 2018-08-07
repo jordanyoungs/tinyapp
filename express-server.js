@@ -13,6 +13,10 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+app.get("/hello", (req, res) => {
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -22,8 +26,12 @@ app.get("/urls", (req, res) => {
   res.render("urls-index", templateVars);
 });
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id]
+    };
+  res.render("urls-show", templateVars);
 });
 
 app.listen(PORT, () => {
