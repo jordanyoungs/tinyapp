@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -26,12 +29,21 @@ app.get("/urls", (req, res) => {
   res.render("urls-index", templateVars);
 });
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls-new");
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]
     };
   res.render("urls-show", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
 app.listen(PORT, () => {
