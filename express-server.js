@@ -1,8 +1,10 @@
-var express = require("express");
-var app = express();
-var PORT = 8080; // default port 8080
+const express = require("express");
+const app = express();
+const PORT = 8080; // default port 8080
 
-var urlDatabase = {
+app.set("view engine", "ejs");
+
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -13,6 +15,13 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  console.log(templateVars);
+  console.log(templateVars.urls);
+  res.render("urls-index", templateVars);
 });
 
 app.get("/hello", (req, res) => {
