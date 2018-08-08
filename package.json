@@ -4,7 +4,7 @@
   "description": "TinyApp URL Shortener Web Server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon express-server.js",
+    "start": "nodemon -L express-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jordanyoungs/tinyapp#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.6.1",
     "express": "^4.16.3"
   },
