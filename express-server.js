@@ -53,6 +53,15 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls-show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id]
+    };
+  res.render("urls-show", templateVars);
+});
+
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;

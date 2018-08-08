@@ -13,10 +13,10 @@
   <h2>Shortened URLs</h2>
 
   <ul>
-    <% for (const key in urls) { %>
-      <li>Original URL = <%= urls[key] %> </br> Shortened URL = <%= key %></li>
-      <form method="POST" action="/urls/<%=key%>/delete">
-        <button type="submit">DELETE</button>
+    <% for (const id in urls) { %>
+      <li>Original URL = <%= urls[id] %> </br> Shortened URL = <%= id %></li>
+      <form method="POST" action="/urls/<%=id%>/delete">
+        <input type="submit" value="DELETE">
       </form>
     <% }; %>
   </ul>
