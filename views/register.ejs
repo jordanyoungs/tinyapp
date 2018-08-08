@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+
+<header>
+  <% include ./partials/_header %>
+</header>
+
+<main>
+  <h2>Register</h2>
+
+  <form method="POST" action="/register" style="margin:150px;">
+    <label for="email">Email:</label>
+    <input id="email" type="email" name="email" style="width: 300px">
+    <label for="password">Password:</label>
+    <input id="password" type="password" name="password" style="width: 300px">
+    <input type="submit" value="Submit">
+  </form>
+
+</main>
+
+</body>
+</html>

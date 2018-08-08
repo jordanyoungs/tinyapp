@@ -97,6 +97,11 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/register", (req, res) => {
+  let templateVars = {username: req.cookies["username"]};
+  res.render("register", templateVars);
+})
+
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`);
 });
