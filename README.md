@@ -1,4 +1,4 @@
-# TinyApppp
+# TinyApp
 
 TinyApp is a URL shortener created as one of my projects at Lighthouse Labs.
 
