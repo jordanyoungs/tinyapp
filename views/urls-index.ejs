@@ -15,6 +15,7 @@
   <ul>
     <% for (const id in urls) { %>
       <li>Original URL = <%= urls[id] %> </br> Shortened URL = <%= id %></li>
+      <a href="/urls/<%=id%>">Edit</a>
       <form method="POST" action="/urls/<%=id%>/delete">
         <input type="submit" value="DELETE">
       </form>
