@@ -23,9 +23,22 @@ const users = {
   }
 }
 
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    shortURL: "b2xVn2",
+    longURL: "http://www.lighthouselabs.ca",
+    ownerID: "xk23"
+  },
+  "9sm5xK": {
+   shortURL: "9sm5xK",
+   longURL: "http://www.google.com",
+   ownerID: "ho8u"
+  }
 };
 
 function generateRandomString() {
@@ -72,30 +85,36 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[req.cookies["user_id"]]
     };
   res.render("urls-show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[req.cookies["user_id"]]
     };
   res.render("urls-show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls/" + shortURL);
+  let url_ID = generateRandomString();
+  console.log("urls before:", urlDatabase)
+  urlDatabase[url_ID] = {
+    shortURL: url_ID,
+    longURL: req.body.longURL,
+    ownerID: req.cookies["user_id"]
+  };
+  console.log("urls after:", urlDatabase)
+  res.redirect("/urls/" + url_ID);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
