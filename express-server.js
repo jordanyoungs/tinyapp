@@ -116,33 +116,36 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  if (req.body.email === "") {
-    res.status(400).send("Error! Email cannot be empty");
-  }
-  if (req.body.password === "") {
-    res.status(400).send("Error! Password cannot be empty");
-  }
+  let emailExists = false;
 
   for (let id in users) {
     if (users[id].email === req.body.email) {
-      res.status(400).send("Error! Email already registered");
-      return;
+      emailExists = true;
     }
   }
-  //email error is working but user is still being created!!!
-  //cookie is also being created
-  //return works for now, test tomorrow
-  const newID = generateRandomString();
-  console.log("Users before:", users);
-  users[newID] = {
-    id: newID,
-    email: req.body.email,
-    password: req.body.password
-  };
-  console.log("Users after:", users);
-  //console.log(req.body); { email: 'hkuhku@uhk', password: 'kjlij' }
-  res.cookie("user_id", newID);
-  res.redirect("/urls");
+
+  if (req.body.email === "") {
+    res.status(400).send("Error! Email cannot be empty");
+  }
+  else if (req.body.password === "") {
+    res.status(400).send("Error! Password cannot be empty");
+  }
+  else if (emailExists) {
+    res.status(400).send("Error! Email already registered");
+  }
+  else {
+    const newID = generateRandomString();
+    console.log("Users before:", users);
+    users[newID] = {
+      id: newID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    console.log("Users after:", users);
+    //console.log(req.body); { email: 'hkuhku@uhk', password: 'kjlij' }
+    res.cookie("user_id", newID);
+    res.redirect("/urls");
+  }
 });
 
 app.listen(PORT, () => {
