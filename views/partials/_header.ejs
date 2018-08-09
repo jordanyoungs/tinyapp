@@ -1,5 +1,15 @@
 <h1>TinyApp URL Shortener</h1>
 
-<a href="/login">Login</a>
+<% if (user) {%>
 
-<a href="/register">Register</a>
+  <p>Logged in as: <%= user.email %></p>
+  <form method="POST" action="/logout">
+  <input type="submit" value="Logout">
+  </form>
+
+<% } else { %>
+
+  <a href="/login">Login</a>
+  <a href="/register">Register</a>
+
+<% } %>

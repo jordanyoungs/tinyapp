@@ -158,14 +158,13 @@ app.post("/register", (req, res) => {
   }
   else {
     const newID = generateRandomString();
-    console.log("Users before:", users);
+
     users[newID] = {
       id: newID,
       email: req.body.email,
       password: req.body.password
     };
-    console.log("Users after:", users);
-    //console.log(req.body); { email: 'hkuhku@uhk', password: 'kjlij' }
+
     res.cookie("user_id", newID);
     res.redirect("/urls");
   }
