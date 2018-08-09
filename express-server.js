@@ -92,13 +92,17 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.longURL;
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies["user_id"]]
-    };
-  res.render("urls-show", templateVars);
+  if (req.cookies["user_id"] === urlDatabase[req.params.id].ownerID) {
+    urlDatabase[req.params.id].longURL = req.body.longURL;
+    let templateVars = {
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      user: users[req.cookies["user_id"]]
+      };
+    res.render("urls-show", templateVars);
+  } else {
+    res.status(403).send("Error! Links can only be edited by the user that created them");
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -119,8 +123,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  if (req.cookies["user_id"] === urlDatabase[req.params.id].ownerID) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("Error! Links can only be deleted by the user that created them");
+  }
 });
 
 app.get("/login", (req, res) => {
