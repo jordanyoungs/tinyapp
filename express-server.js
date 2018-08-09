@@ -14,12 +14,12 @@ const users = {
   "xk23": {
     id: "xk23",
     email: "jordan@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "purple"
   },
  "ho8u": {
     id: "ho8u",
     email: "kelly@example.com",
-    password: "dishwasher-funk"
+    password: "funk"
   }
 }
 
@@ -61,8 +61,12 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {user: users[req.cookies["user_id"]]};
-  res.render("urls-new", templateVars);
+  if (req.cookies["user_id"]) {
+    let templateVars = {user: users[req.cookies["user_id"]]};
+    res.render("urls-new", templateVars);
+  } else {
+    res.render("login", {user:undefined});
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
