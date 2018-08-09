@@ -34,6 +34,11 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     ownerID: "xk23"
   },
+  "123wer": {
+    shortURL: "123wer",
+    longURL: "http://www.youtube.ca",
+    ownerID: "xk23"
+  },
   "9sm5xK": {
    shortURL: "9sm5xK",
    longURL: "http://www.google.com",
@@ -51,6 +56,18 @@ function generateRandomString() {
   }
 
   return characters.join("");
+}
+
+function getOwnedUrls(userID) {
+  let ownedUrls = {};
+
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].ownerID === userID) {
+      ownedUrls[url] = urlDatabase[url];
+    }
+  }
+
+  return ownedUrls;
 }
 
 app.get("/", (req, res) => {
