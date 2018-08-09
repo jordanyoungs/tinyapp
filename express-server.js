@@ -15,6 +15,12 @@ const templateVars = {
   user: undefined,
   error: undefined
 };
+//but i want them to be reset before every request so I will use middleware
+app.use(function(req, res, next) {
+  templateVars.user = undefined;
+  templateVars.error = undefined;
+  next();
+});
 
 const users = {
   "xk23": {
@@ -120,6 +126,8 @@ app.post("/urls/:id", (req, res) => {
 
     res.render("urls-show", templateVars);
   } else {
+    //templateVars.error = "403 Error: Links can only be edited by the user that created them";
+    //res.render()
     res.status(403).send("Error! Links can only be edited by the user that created them");
   }
 });
@@ -199,14 +207,15 @@ app.post("/register", (req, res) => {
 
   if (req.body.email === "") {
     templateVars.error = "400 Error: Email cannot be empty";
-    res.render("register", templateVars)
-    //res.status(400).send("Error! Email cannot be empty");
+    res.render("register", templateVars);
   }
   else if (req.body.password === "") {
-    res.status(400).send("Error! Password cannot be empty");
+    templateVars.error = "400 Error: Password cannot be empty";
+    res.render("register", templateVars);
   }
   else if (emailExists) {
-    res.status(400).send("Error! Email already registered");
+    templateVars.error = "400 Error: Email already registered";
+    res.render("register", templateVars);
   }
   else {
     const newID = generateRandomString();

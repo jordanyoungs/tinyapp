@@ -12,10 +12,6 @@
 <main>
   <h2>Register</h2>
 
-  <% if (error) { %>
-    <p> <%= error %> </p>
-  <% } %>
-
   <form method="POST" action="/register" style="margin:150px;">
     <label for="email">Email:</label>
     <input id="email" type="email" name="email" style="width: 300px">
