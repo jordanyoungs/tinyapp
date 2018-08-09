@@ -17,7 +17,7 @@ const templateVars = {
 };
 //but i want them to be reset before every request so I will use middleware
 app.use(function(req, res, next) {
-  templateVars.user = undefined;
+  templateVars.user = users[req.cookies["user_id"]];
   templateVars.error = undefined;
   next();
 });
@@ -96,13 +96,11 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   templateVars.urls = urlDatabase;
-  templateVars.user = users[req.cookies["user_id"]];
   res.render("urls-index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   if (req.cookies["user_id"]) {
-    templateVars.user = users[req.cookies["user_id"]];
     res.render("urls-new", templateVars);
   } else {
     res.redirect("/login");
@@ -112,7 +110,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   templateVars.shortURL = req.params.id
   templateVars.longURL = urlDatabase[req.params.id].longURL
-  templateVars.user = users[req.cookies["user_id"]]
   res.render("urls-show", templateVars);
 });
 
@@ -122,25 +119,23 @@ app.post("/urls/:id", (req, res) => {
 
     templateVars.shortURL = req.params.id
     templateVars.longURL = urlDatabase[req.params.id].longURL
-    templateVars.user = users[req.cookies["user_id"]]
 
     res.render("urls-show", templateVars);
   } else {
-    //templateVars.error = "403 Error: Links can only be edited by the user that created them";
-    //res.render()
-    res.status(403).send("Error! Links can only be edited by the user that created them");
+    templateVars.error = "403 Error: Links can only be edited by the user that created them";
+    res.render("urls-show", templateVars);
   }
 });
 
 app.post("/urls", (req, res) => {
   let url_ID = generateRandomString();
-  console.log("urls before:", urlDatabase)
+
   urlDatabase[url_ID] = {
     shortURL: url_ID,
     longURL: req.body.longURL,
     ownerID: req.cookies["user_id"]
   };
-  console.log("urls after:", urlDatabase)
+
   res.redirect("/urls/" + url_ID);
 });
 
@@ -154,12 +149,13 @@ app.post("/urls/:id/delete", (req, res) => {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
-    res.status(403).send("Error! Links can only be deleted by the user that created them");
+    templateVars.error = "403 Error: Links can only be deleted by the user that created them";
+    res.render("urls-index", templateVars);
+    //res.status(403).send("Error! Links can only be deleted by the user that created them");
   }
 });
 
 app.get("/login", (req, res) => {
-  templateVars.user = users[req.cookies["user_id"]];
   res.render("login", templateVars);
 })
 
@@ -192,7 +188,6 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  templateVars.user = users[req.cookies["user_id"]];
   res.render("register", templateVars);
 })
 
