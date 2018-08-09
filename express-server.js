@@ -10,6 +10,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
+//so that I never get variable does not exist errors from my templates
+const templateVars = {
+  user: undefined,
+  error: undefined
+};
+
 const users = {
   "xk23": {
     id: "xk23",
@@ -59,7 +65,7 @@ function generateRandomString() {
 }
 
 function getOwnedUrls(userID) {
-  let ownedUrls = {};
+  const ownedUrls = {};
 
   for (let url in urlDatabase) {
     if (urlDatabase[url].ownerID === userID) {
@@ -83,16 +89,14 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
-    };
+  templateVars.urls = urlDatabase;
+  templateVars.user = users[req.cookies["user_id"]];
   res.render("urls-index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   if (req.cookies["user_id"]) {
-    let templateVars = {user: users[req.cookies["user_id"]]};
+    templateVars.user = users[req.cookies["user_id"]];
     res.render("urls-new", templateVars);
   } else {
     res.redirect("/login");
@@ -100,22 +104,20 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies["user_id"]]
-    };
+  templateVars.shortURL = req.params.id
+  templateVars.longURL = urlDatabase[req.params.id].longURL
+  templateVars.user = users[req.cookies["user_id"]]
   res.render("urls-show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
   if (req.cookies["user_id"] === urlDatabase[req.params.id].ownerID) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
-    let templateVars = {
-      shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
-      user: users[req.cookies["user_id"]]
-      };
+
+    templateVars.shortURL = req.params.id
+    templateVars.longURL = urlDatabase[req.params.id].longURL
+    templateVars.user = users[req.cookies["user_id"]]
+
     res.render("urls-show", templateVars);
   } else {
     res.status(403).send("Error! Links can only be edited by the user that created them");
@@ -149,7 +151,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = {user: users[req.cookies["user_id"]]};
+  templateVars.user = users[req.cookies["user_id"]];
   res.render("login", templateVars);
 })
 
@@ -182,7 +184,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {user: users[req.cookies["user_id"]]};
+  templateVars.user = users[req.cookies["user_id"]];
   res.render("register", templateVars);
 })
 
@@ -196,7 +198,9 @@ app.post("/register", (req, res) => {
   }
 
   if (req.body.email === "") {
-    res.status(400).send("Error! Email cannot be empty");
+    templateVars.error = "400 Error: Email cannot be empty";
+    res.render("register", templateVars)
+    //res.status(400).send("Error! Email cannot be empty");
   }
   else if (req.body.password === "") {
     res.status(400).send("Error! Password cannot be empty");
