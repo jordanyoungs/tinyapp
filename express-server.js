@@ -10,6 +10,19 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
+const users = {
+  "xk23": {
+    id: "xk23",
+    email: "jordan@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "ho8u": {
+    id: "ho8u",
+    email: "kelly@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -101,6 +114,20 @@ app.get("/register", (req, res) => {
   let templateVars = {username: req.cookies["username"]};
   res.render("register", templateVars);
 })
+
+app.post("/register", (req, res) => {
+  const newID = generateRandomString();
+  console.log("Users before:", users);
+  users[newID] = {
+    id: newID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  console.log("Users after:", users);
+  //console.log(req.body); { email: 'hkuhku@uhk', password: 'kjlij' }
+  res.cookie("user_id", newID);
+  res.redirect("/urls");
+});
 
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`);
