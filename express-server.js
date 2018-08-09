@@ -151,7 +151,6 @@ app.post("/urls/:id/delete", (req, res) => {
   } else {
     templateVars.error = "403 Error: Links can only be deleted by the user that created them";
     res.render("urls-index", templateVars);
-    //res.status(403).send("Error! Links can only be deleted by the user that created them");
   }
 });
 
@@ -171,10 +170,12 @@ app.post("/login", (req, res) => {
   }
 
   if (!emailExists) {
-    res.status(403).send("Error! Email not registered");
+    templateVars.error = "403 Error: Email not registered";
+    res.render("login", templateVars);
   }
   else if (req.body.password !== users[user_id].password) {
-    res.status(403).send("Error! Invalid password");
+    templateVars.error = "403 Error: Invalid password";
+    res.render("login", templateVars);
   }
   else {
     res.cookie("user_id", user_id);
