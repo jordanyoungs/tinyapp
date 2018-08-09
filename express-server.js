@@ -106,8 +106,26 @@ app.get("/login", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+  let emailExists = false;
+  let user_id;
+
+  for (let id in users) {
+    if (users[id].email === req.body.email) {
+      emailExists = true;
+      user_id = id;
+    }
+  }
+
+  if (!emailExists) {
+    res.status(403).send("Error! Email not registered");
+  }
+  else if (req.body.password !== users[user_id].password) {
+    res.status(403).send("Error! Invalid password");
+  }
+  else {
+    res.cookie("user_id", user_id);
+    res.redirect("/");
+  }
 });
 
 app.post("/logout", (req, res) => {
