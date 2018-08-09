@@ -55,13 +55,13 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
     };
   res.render("urls-index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]};
+  let templateVars = {user: users[req.cookies["user_id"]]};
   res.render("urls-new", templateVars);
 });
 
@@ -69,7 +69,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
     };
   res.render("urls-show", templateVars);
 });
@@ -79,7 +79,7 @@ app.post("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
     };
   res.render("urls-show", templateVars);
 });
@@ -111,7 +111,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {username: req.cookies["username"]};
+  let templateVars = {user: users[req.cookies["user_id"]]};
   res.render("register", templateVars);
 })
 
