@@ -116,6 +116,22 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
+  if (req.body.email === "") {
+    res.status(400).send("Error! Email cannot be empty");
+  }
+  if (req.body.password === "") {
+    res.status(400).send("Error! Password cannot be empty");
+  }
+
+  for (let id in users) {
+    if (users[id].email === req.body.email) {
+      res.status(400).send("Error! Email already registered");
+      return;
+    }
+  }
+  //email error is working but user is still being created!!!
+  //cookie is also being created
+  //return works for now, test tomorrow
   const newID = generateRandomString();
   console.log("Users before:", users);
   users[newID] = {
