@@ -145,15 +145,20 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  let url_ID = generateRandomString();
+  if (req.session.user_id) {
+    let url_ID = generateRandomString();
 
-  urlDatabase[url_ID] = {
-    shortURL: url_ID,
-    longURL: req.body.longURL,
-    ownerID: req.session.user_id
-  };
+    urlDatabase[url_ID] = {
+      shortURL: url_ID,
+      longURL: req.body.longURL,
+      ownerID: req.session.user_id
+    };
 
-  res.redirect("/urls/" + url_ID);
+    res.redirect("/urls/" + url_ID);
+  } else {
+    templateVars.error = "401 Error: You must be logged in to create a new URL";
+    res.render("login", templateVars);
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
