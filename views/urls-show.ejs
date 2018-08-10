@@ -10,19 +10,23 @@
 </header>
 
 <main>
+
   <% if (error) { %>
+    <!-- for errors, display nothing -->
   <% } else { %>
 
     <br>
-    <a href="/urls">URL Index</a>
 
-    <h2>Your URL</h2>
+    <a href="/urls">URL Index</a>
 
     <h3>Original Long URL</h3>
     <p><%= longURL %></p>
+
     <h3>Shortened URL</h3>
     <p><%= shortURL %></p>
+
     <br>
+
     <form method="POST" action="/urls/<%=shortURL%>">
       <label for="longURL">Edit your URL:</label>
       <input id="longURL" type="text" name="longURL" value="<%= longURL %>" style="width: 300px">

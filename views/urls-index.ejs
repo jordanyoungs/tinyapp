@@ -10,7 +10,9 @@
 </header>
 
 <main>
+
   <% if (error && (error.slice(0,3) === "401")) { %>
+    <!-- for 401 errors, display nothing -->
   <% } else { %>
 
     <h2>Shortened URLs</h2>
@@ -28,6 +30,7 @@
     <a href='/urls/new'>Shorten another link here</a>
 
   <% } %>
+
 </main>
 
 </body>
