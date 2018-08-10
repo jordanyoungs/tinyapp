@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const cookieParser = require('cookie-parser')
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcryptjs');
 
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['secretkey1', 'secretkey2'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -18,7 +22,7 @@ const templateVars = {
 };
 //but i want them to be reset before every request so I will use middleware
 app.use(function(req, res, next) {
-  templateVars.user = users[req.cookies["user_id"]];
+  templateVars.user = users[req.session.user_id];
   templateVars.error = undefined;
   next();
 });
@@ -96,8 +100,8 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (req.cookies["user_id"]) {
-    templateVars.urls = getOwnedUrls(req.cookies["user_id"]);
+  if (req.session.user_id) {
+    templateVars.urls = getOwnedUrls(req.session.user_id);
   } else {
     templateVars.urls = {};
     templateVars.error = "401 Error: Please login or register to view URLs"
@@ -106,7 +110,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.cookies["user_id"]) {
+  if (req.session.user_id) {
     res.render("urls-new", templateVars);
   } else {
     res.redirect("/login");
@@ -114,11 +118,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const isOwnerOfUrl = req.cookies["user_id"] === urlDatabase[req.params.id].ownerID;
-  if (req.cookies["user_id"] && isOwnerOfUrl) {
+  const isOwnerOfUrl = req.session.user_id === urlDatabase[req.params.id].ownerID;
+  if (req.session.user_id && isOwnerOfUrl) {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.params.id].longURL;
-  } else if (req.cookies["user_id"]) {
+  } else if (req.session.user_id) {
     templateVars.error = "403 Error: Users can only edit links they created";
   } else {
     templateVars.error = "401 Error: You must be logged in to edit a URL"
@@ -127,7 +131,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  if (req.cookies["user_id"] === urlDatabase[req.params.id].ownerID) {
+  if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
 
     templateVars.shortURL = req.params.id
@@ -146,7 +150,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[url_ID] = {
     shortURL: url_ID,
     longURL: req.body.longURL,
-    ownerID: req.cookies["user_id"]
+    ownerID: req.session.user_id
   };
 
   res.redirect("/urls/" + url_ID);
@@ -158,7 +162,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (req.cookies["user_id"] === urlDatabase[req.params.id].ownerID) {
+  if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
@@ -191,13 +195,13 @@ app.post("/login", (req, res) => {
     res.render("login", templateVars);
   }
   else {
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     res.redirect("/");
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie("session");
   res.redirect("/urls");
 });
 
@@ -236,7 +240,7 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     };
 
-    res.cookie("user_id", newID);
+    req.session.user_id = newID;
     res.redirect("/urls");
   }
 });
