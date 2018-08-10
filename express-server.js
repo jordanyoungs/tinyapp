@@ -113,8 +113,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  templateVars.shortURL = req.params.id
-  templateVars.longURL = urlDatabase[req.params.id].longURL
+  const isOwnerOfUrl = req.cookies["user_id"] === urlDatabase[req.params.id].ownerID;
+  if (req.cookies["user_id"] && isOwnerOfUrl) {
+    templateVars.shortURL = req.params.id;
+    templateVars.longURL = urlDatabase[req.params.id].longURL;
+  } else if (req.cookies["user_id"]) {
+    templateVars.error = "403 Error: Users can only edit links they created";
+  } else {
+    templateVars.error = "401 Error: You must be logged in to edit a URL"
+  }
   res.render("urls-show", templateVars);
 });
 

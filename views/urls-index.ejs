@@ -10,19 +10,24 @@
 </header>
 
 <main>
-  <h2>Shortened URLs</h2>
+  <% if (error) { %>
+  <% } else { %>
 
-  <ul>
-    <% for (const id in urls) { %>
-      <li>Original URL = <%= urls[id].longURL %> </br> Shortened URL = <%= id %></li>
-      <a href="/urls/<%=id%>">Edit</a>
-      <form method="POST" action="/urls/<%=id%>/delete">
-        <input type="submit" value="DELETE">
-      </form>
-    <% }; %>
-  </ul>
+    <h2>Shortened URLs</h2>
 
-  <a href='/urls/new'>Shorten another link here</a>
+    <ul>
+      <% for (const id in urls) { %>
+        <li>Original URL = <%= urls[id].longURL %> </br> Shortened URL = <%= id %></li>
+        <a href="/urls/<%=id%>">Edit</a>
+        <form method="POST" action="/urls/<%=id%>/delete">
+          <input type="submit" value="DELETE">
+        </form>
+      <% }; %>
+    </ul>
+
+    <a href='/urls/new'>Shorten another link here</a>
+
+  <% } %>
 </main>
 
 </body>
