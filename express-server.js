@@ -134,9 +134,6 @@ app.post("/urls/:id", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
 
-    // templateVars.shortURL = req.params.id
-    // templateVars.longURL = urlDatabase[req.params.id].longURL
-
     res.redirect("/urls");
   } else {
     templateVars.error = "403 Error: Links can only be edited by the user that created them";

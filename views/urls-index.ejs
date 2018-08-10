@@ -10,7 +10,7 @@
 </header>
 
 <main>
-  <% if (error) { %>
+  <% if (error && (error.slice(0,3) === "401")) { %>
   <% } else { %>
 
     <h2>Shortened URLs</h2>
