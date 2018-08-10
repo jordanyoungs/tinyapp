@@ -28,38 +28,33 @@ app.use(function(req, res, next) {
 });
 
 const users = {
-  "xk23": {
-    id: "xk23",
+  "11xk23": {
+    id: "11xk23",
     email: "jordan@example.com",
-    password: "purple"
+    password: bcrypt.hashSync("purple", 10)
   },
- "ho8u": {
-    id: "ho8u",
+ "11ho8u": {
+    id: "11ho8u",
     email: "kelly@example.com",
-    password: "funk"
+    password: bcrypt.hashSync("funk", 10)
   }
 }
-
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
 
 const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2",
     longURL: "http://www.lighthouselabs.ca",
-    ownerID: "xk23"
+    ownerID: "11xk23"
   },
   "123wer": {
     shortURL: "123wer",
     longURL: "http://www.youtube.ca",
-    ownerID: "xk23"
+    ownerID: "11xk23"
   },
   "9sm5xK": {
    shortURL: "9sm5xK",
    longURL: "http://www.google.com",
-   ownerID: "ho8u"
+   ownerID: "11ho8u"
   }
 };
 
@@ -88,7 +83,11 @@ function getOwnedUrls(userID) {
 }
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/hello", (req, res) => {
@@ -118,8 +117,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const isOwnerOfUrl = req.session.user_id === urlDatabase[req.params.id].ownerID;
-  if (req.session.user_id && isOwnerOfUrl) {
+  if (!urlDatabase[req.params.id]) {
+    templateVars.error = "404 Error: URL does not exist";
+  } else if (req.session.user_id && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.params.id].longURL;
   } else if (req.session.user_id) {
