@@ -123,7 +123,7 @@ app.get("/urls/:id", (req, res) => {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.params.id].longURL;
   } else if (req.session.user_id) {
-    templateVars.error = "403 Error: Users can only edit links they created";
+    templateVars.error = "403 Error: Users can only edit URLs they created";
   } else {
     templateVars.error = "401 Error: You must be logged in to edit a URL"
   }
@@ -132,11 +132,18 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
+  //logged in and owner of URL
     urlDatabase[req.params.id].longURL = req.body.longURL;
-
     res.redirect("/urls");
+
+  } else if (req.session.user_id) {
+  //logged in but not owner
+    templateVars.error = "403 Error: URLs can only be edited by the user that created them";
+    res.render("urls-show", templateVars);
+
   } else {
-    templateVars.error = "403 Error: Links can only be edited by the user that created them";
+  //not logged in
+    templateVars.error = "401 Error: You must be logged in to edit a URL";
     res.render("urls-show", templateVars);
   }
 });
@@ -173,7 +180,7 @@ app.post("/urls/:id/delete", (req, res) => {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
-    templateVars.error = "403 Error: Links can only be deleted by the user that created them";
+    templateVars.error = "403 Error: URLs can only be deleted by the user that created them";
     res.render("urls-index", templateVars);
   }
 });
