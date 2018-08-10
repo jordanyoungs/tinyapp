@@ -186,7 +186,7 @@ app.post("/login", (req, res) => {
     templateVars.error = "403 Error: Email not registered";
     res.render("login", templateVars);
   }
-  else if (req.body.password !== users[user_id].password) {
+  else if (!bcrypt.compareSync(req.body.password, users[user_id].password)) {
     templateVars.error = "403 Error: Invalid password";
     res.render("login", templateVars);
   }
@@ -229,13 +229,13 @@ app.post("/register", (req, res) => {
   else {
     const newID = generateRandomString();
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-    console.log("users before", users);
+
     users[newID] = {
       id: newID,
       email: req.body.email,
       password: hashedPassword
     };
-    console.log("users after", users);
+
     res.cookie("user_id", newID);
     res.redirect("/urls");
   }
