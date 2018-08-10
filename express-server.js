@@ -118,7 +118,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    templateVars.error = "404 Error: URL does not exist";
+    templateVars.error = "404 Error: URL does not exist in database";
   } else if (req.session.user_id && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.params.id].longURL;
@@ -157,8 +157,13 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (!urlDatabase[req.params.shortURL]) {
+    templateVars.error = "404 Error: URL does not exist in database";
+    res.render("login", templateVars);
+  } else {
+    let longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
