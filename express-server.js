@@ -99,7 +99,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (req.session.user_id) {
+ if (req.session.user_id) {
     templateVars.urls = getOwnedUrls(req.session.user_id);
   } else {
     templateVars.urls = {};
@@ -144,7 +144,7 @@ app.post("/urls/:id", (req, res) => {
   } else {
   //not logged in
     templateVars.error = "401 Error: You must be logged in to edit a URL";
-    res.render("urls-show", templateVars);
+    res.render("login", templateVars);
   }
 });
 
@@ -177,11 +177,19 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
+  //logged in and owner of URL
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
-  } else {
+
+  } else if (req.session.user_id) {
+  //logged in but not owner
     templateVars.error = "403 Error: URLs can only be deleted by the user that created them";
     res.render("urls-index", templateVars);
+
+  } else {
+  //not logged in
+    templateVars.error = "401 Error: You must be logged in to delete a URL";
+    res.render("login", templateVars);
   }
 });
 
