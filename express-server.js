@@ -194,7 +194,11 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login", templateVars);
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("login", templateVars);
+  }
 })
 
 app.post("/login", (req, res) => {
