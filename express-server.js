@@ -20,8 +20,10 @@ const templateVars = {
   user: undefined,
   error: undefined
 };
+let isLoggedIn;
 //but i want them to be reset before every request so I will use middleware
 app.use(function(req, res, next) {
+  isLoggedIn = req.session.user_id;
   templateVars.user = users[req.session.user_id];
   templateVars.error = undefined;
   next();
@@ -83,7 +85,7 @@ function getOwnedUrls(userID) {
 }
 
 app.get("/", (req, res) => {
-  if (req.session.user_id) {
+  if (isLoggedIn) {
     res.redirect("/urls");
   } else {
     res.redirect("/login");
@@ -99,7 +101,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
- if (req.session.user_id) {
+ if (isLoggedIn) {
     templateVars.urls = getOwnedUrls(req.session.user_id);
   } else {
     templateVars.urls = {};
@@ -109,7 +111,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.session.user_id) {
+  if (isLoggedIn) {
     res.render("urls-new", templateVars);
   } else {
     res.redirect("/login");
@@ -119,10 +121,10 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     templateVars.error = "404 Error: URL does not exist in database";
-  } else if (req.session.user_id && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
+  } else if (isLoggedIn && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.params.id].longURL;
-  } else if (req.session.user_id) {
+  } else if (isLoggedIn) {
     templateVars.error = "403 Error: Users can only edit URLs they created";
   } else {
     templateVars.error = "401 Error: You must be logged in to edit a URL"
@@ -131,12 +133,12 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
+  if (isLoggedIn && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
   //logged in and owner of URL
     urlDatabase[req.params.id].longURL = req.body.longURL;
     res.redirect("/urls");
 
-  } else if (req.session.user_id) {
+  } else if (isLoggedIn) {
   //logged in but not owner
     templateVars.error = "403 Error: URLs can only be edited by the user that created them";
     res.render("urls-show", templateVars);
@@ -149,7 +151,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  if (req.session.user_id) {
+  if (isLoggedIn) {
     let url_ID = generateRandomString();
 
     urlDatabase[url_ID] = {
@@ -176,12 +178,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.id].ownerID) {
+  if (isLoggedIn && (req.session.user_id === urlDatabase[req.params.id].ownerID)) {
   //logged in and owner of URL
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
 
-  } else if (req.session.user_id) {
+  } else if (isLoggedIn) {
   //logged in but not owner
     templateVars.error = "403 Error: URLs can only be deleted by the user that created them";
     res.render("urls-index", templateVars);
@@ -194,7 +196,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  if (req.session.user_id) {
+  if (isLoggedIn) {
     res.redirect("/urls");
   } else {
     res.render("login", templateVars);
@@ -232,7 +234,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if (req.session.user_id) {
+  if (isLoggedIn) {
     res.redirect("/urls");
   } else {
     res.render("register", templateVars);
