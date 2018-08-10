@@ -3,6 +3,11 @@ const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const cookieSession = require('cookie-session')
 const bcrypt = require('bcryptjs');
+const bodyParser = require("body-parser");
+app.set("view engine", "ejs");
+
+
+//--------------------MIDDLEWARE--------------------//
 
 app.use(cookieSession({
   name: 'session',
@@ -10,24 +15,30 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.set("view engine", "ejs");
 
-//so that I never get variable does not exist errors from my templates
+//--------------------MY MIDDLEWARE--------------------//
+/* I set up this middleware so that user and error will always exist but just be set to undefined.
+The middleware updates user everytime, as well as checks the cookie and updates the isLoggedin variable.
+It also clears error so that I can pass an error message once and know it will be cleared after.*/
+
 const templateVars = {
   user: undefined,
   error: undefined
 };
+
 let isLoggedIn;
-//but i want them to be reset before every request so I will use middleware
+
 app.use(function(req, res, next) {
-  isLoggedIn = req.session.user_id;
   templateVars.user = users[req.session.user_id];
   templateVars.error = undefined;
+  isLoggedIn = req.session.user_id;
   next();
 });
+
+
+//--------------------DATABASES--------------------//
 
 const users = {
   "11xk23": {
@@ -60,6 +71,9 @@ const urlDatabase = {
   }
 };
 
+
+//--------------------HELPER FUNCTIONS--------------------//
+
 function generateRandomString() {
   const characters = [];
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012456789";
@@ -83,6 +97,9 @@ function getOwnedUrls(userID) {
 
   return ownedUrls;
 }
+
+
+//--------------------ROUTES--------------------//
 
 app.get("/", (req, res) => {
   if (isLoggedIn) {
