@@ -95,7 +95,12 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  templateVars.urls = urlDatabase;
+  if (req.cookies["user_id"]) {
+    templateVars.urls = getOwnedUrls(req.cookies["user_id"]);
+  } else {
+    templateVars.urls = {};
+    templateVars.error = "401 Error: Please login or register to view URLs"
+  }
   res.render("urls-index", templateVars);
 });
 
