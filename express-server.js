@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = process.env.PORT || 8080; // default port 8080
 const cookieSession = require('cookie-session')
 const bcrypt = require('bcryptjs');
 
@@ -232,7 +232,11 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("register", templateVars);
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("register", templateVars);
+  }
 })
 
 app.post("/register", (req, res) => {
